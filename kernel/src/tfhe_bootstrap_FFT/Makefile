@@ -58,7 +58,7 @@ TARGET := hw
 HOST_ARCH := x86
 SYSROOT := 
 
-include ./utils.mk
+include ../../utils.mk
 
 XSA := 
 ifneq ($(PLATFORM), )
@@ -79,19 +79,19 @@ VPP_PFLAGS :=
 CMD_ARGS = $(BUILD_DIR)/krnl.xclbin
 SDCARD := sd_card
 
-include opencl.mk
+include ../../opencl.mk
 CXXFLAGS += $(opencl_CXXFLAGS) -Wall -O0 -g -std=c++1y
 LDFLAGS += $(opencl_LDFLAGS)
 
-INCLUDES = src/include
+INCLUDES = ../include
 
 ########################## Checking if PLATFORM in whitelist #######################
 PLATFORM_BLOCKLIST += nodma 
 ############################## Setting up Host Variables ##############################
 #Include Required Host Source Files
-HOST_SRCS += src/vadd.cpp 
+HOST_SRCS += tfhe_bootstrap_FFT_tb.cpp 
 # Host compiler global settings
-CXXFLAGS += -fmessage-length=0
+CXXFLAGS += -fmessage-length=0 -I$(INCLUDES) -ltfhe-spqlios-fma 
 LDFLAGS += -lrt -lstdc++ 
 
 ifneq ($(HOST_ARCH), x86)
@@ -100,7 +100,7 @@ endif
 
 ############################## Setting up Kernel Variables ##############################
 # Kernel compiler global settings
-VPP_FLAGS += -t $(TARGET) --platform $(PLATFORM) --save-temps 
+VPP_FLAGS += -t $(TARGET) --platform $(PLATFORM) --save-temps -I$(INCLUDES) --config config.cfg
 ifneq ($(TARGET), hw)
 	VPP_FLAGS += -g
 endif
@@ -113,7 +113,7 @@ EMU_DIR = $(SDCARD)/data/emulation
 
 ############################## Declaring Binary Containers ##############################
 BINARY_CONTAINERS += $(BUILD_DIR)/krnl.xclbin
-BINARY_CONTAINER_krnl_OBJS += $(TEMP_DIR)/krnl.xo
+#BINARY_CONTAINER_krnl_OBJS += $(TEMP_DIR)/krnl.xo
 
 ############################## Setting Targets ##############################
 CP = cp -rf
@@ -131,12 +131,15 @@ build: check-vitis check-device $(BINARY_CONTAINERS)
 xclbin: build
 
 ############################## Setting Rules for Binary Containers (Building Kernels) ##############################
-$(TEMP_DIR)/tfhe_bootstrap_FFT.xo: tfhe_bootstrap_FFT/tfhe_bootstrap_FFT.cpp
+$(TEMP_DIR)/tfhe_bootstrap_FFT.xo: tfhe_bootstrap_FFT.cpp
 	mkdir -p $(TEMP_DIR)
 	$(VPP) $(VPP_FLAGS) -c -k tfhe_bootstrap_FFT --temp_dir $(TEMP_DIR)  -I'$(<D)' -o'$@' '$<'
-$(BINARY_CONTAINER_krnl_OBJS) += $(TEMP_DIR)/tfhe_bootstrap_FFT.xo
+BINARY_CONTAINER_krnl_OBJS += $(TEMP_DIR)/tfhe_bootstrap_FFT.xo
 
-
+$(TEMP_DIR)/tfhe_bootstrap_FFT_return.xo: tfhe_bootstrap_FFT_return.cpp
+	mkdir -p $(TEMP_DIR)
+	$(VPP) $(VPP_FLAGS) -c -k tfhe_bootstrap_FFT_return --temp_dir $(TEMP_DIR)  -I'$(<D)' -o'$@' '$<'
+BINARY_CONTAINER_krnl_OBJS += $(TEMP_DIR)/tfhe_bootstrap_FFT_return.xo
 
 $(BUILD_DIR)/krnl.xclbin: $(BINARY_CONTAINER_krnl_OBJS)
 	mkdir -p $(BUILD_DIR)

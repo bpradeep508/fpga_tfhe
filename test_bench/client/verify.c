@@ -28,7 +28,7 @@ int main() {
         int_answer |= (ai<<i);
     }
 
-    printf("And the result is: %d\n",int_answer);
+    printf("And the result is: %d vs %d \n", int_answer, (388 | 499));
     printf("I hope you remember what was the question!\n");
 
     //clean up all pointers

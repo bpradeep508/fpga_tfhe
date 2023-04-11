@@ -30,6 +30,12 @@ void minimum(LweSample* result, const LweSample* a, const LweSample* b, const in
     delete_gate_bootstrapping_ciphertext_array(2, tmps);    
 }
 
+void OR(LweSample* result, const LweSample* a, const LweSample* b, const int nb_bits, const TFheGateBootstrappingCloudKeySet* bk) {
+    for (int i=0; i<nb_bits; i++) {
+        bootsOR(&result[i], &a[i], &b[i], bk);
+    }
+}
+
 int main() {
     
     //reads the cloud key from file
@@ -53,7 +59,7 @@ int main() {
     //do some operations on the ciphertexts: here, we will compute the
     //minimum of the two
     LweSample* result = new_gate_bootstrapping_ciphertext_array(16, params);
-    minimum(result, ciphertext1, ciphertext2, 16, bk);
+    OR(result, ciphertext1, ciphertext2, 16, bk);
 
     //export the 32 ciphertexts to a file (for the cloud)
     FILE* answer_data = fopen("./data/answer.data","wb");

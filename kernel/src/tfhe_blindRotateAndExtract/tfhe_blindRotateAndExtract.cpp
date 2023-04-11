@@ -85,3 +85,15 @@ void torusPolynomialMulByXai(TorusPolynomial *result, int32_t a, const TorusPoly
 void tLweExtractLweSample(LweSample* result, const TLweSample* x, const LweParams* params,  const TLweParams* rparams) {
     tLweExtractLweSampleIndex(result, x, 0, params, rparams);
 }
+
+void tfhe_blindRotateAndExtract_FFT(
+    hls::stream<LweBootstrappingKeyFFT_FPGA>& in_bk,
+    hls::stream<TorusPolynomial_FPGA>& in_testvect,
+    hls::stream<ARRAY>& in_bara,
+    hls::stream<int32_t>& in_barb,
+    hls::stream<LweSample_FPGA>& out) {
+
+
+        
+
+}

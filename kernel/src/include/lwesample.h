@@ -1,11 +1,13 @@
-#ifdef LWESAMPLES_FPGA_H
+#ifndef LWESAMPLES_FPGA_H
 #define LWESAMPLES_FPGA_H
 
-#include "fpga_constans.h"
+//#pragma once 
 
-struct LweSample_FPGA {
-	Torus32 a[param_N]; //-- the n coefs of the mask
-    Torus32 b;  //
+#include "constants.h"
+
+typedef struct LweSample_FPGA_Struct {
+	Torus32_FPGA a[N]; //-- the n coefs of the mask
+    Torus32_FPGA b;  //
    	double current_variance; 
 } LweSample_FPGA;
 

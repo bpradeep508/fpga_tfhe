@@ -43,3 +43,11 @@ EXPORT void tfhe_bootstrap_woKS_FFT(hls::stream<LweSample_FPGA> &result, hls::st
 
 
 }
+
+EXPORT int32_t modSwitchFromTorus32(Torus32 phase, int32_t Msize){
+    uint64_t interv = ((UINT64_C(1)<<63)/Msize)*2; // width of each intervall
+    uint64_t half_interval = interv/2; // begin of the first intervall
+    uint64_t phase64 = (uint64_t(phase)<<32) + half_interval;
+    //floor to the nearest multiples of interv
+    return phase64/interv;
+}
